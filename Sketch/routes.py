@@ -12,14 +12,17 @@ print("Routes intiated")
 @app.route('/index')
 @app.route('/')
 def index():
-    return render_template('index.html')
+  return render_template('index.html')
 
+@app.route('/side')
+def sideBarTest():
+	return render_template('testSideBar.html')
 
 # ERROR HANDLING PAGES
 
 @app.errorhandler(404)
 def not_found(error):
-    print(error)  # error is a "werkzeug.exceptions.NotFound" object.
-    # Handle a 404 error
-    # todo update 404error.html to be better
-    return make_response(render_template('404error.html'), 404)
+  print(error)  # error is a "werkzeug.exceptions.NotFound" object.
+  # Handle a 404 error
+  # todo update 404error.html to be better
+  return make_response(render_template('404error.html'), 404)
