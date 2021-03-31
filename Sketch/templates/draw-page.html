@@ -1,0 +1,63 @@
+{% extends "base.html"%}
+{% block title %} Sketch! {% endblock %}
+{% block headers %}
+
+		<!-- My Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/sidebar.css') }}">
+	{% endblock %}
+
+
+{% block content %}
+
+<!-- Drawing Surface -->
+<canvas style="border: 1px solid black;"></canvas>
+
+<main>
+
+<!-- Sidebar interior -->
+<div id="mySidenav" class="sidenav">
+	<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+	<button type="button" class="sidebar-button fas fa-palette btn btn-light btn-lg" id="colors"> </button>
+	<br></br> 
+	<button type="button" class="sidebar-button fas fa-brush btn btn-light btn-lg" id="thickness"></button>
+	<br></br> 
+	<button type="button" class="sidebar-button fas fa-fill-drip btn btn-light btn-lg" id="bucket"></button>
+	<br></br>
+	<button type="button" class="sidebar-button fas fa-shapes btn btn-light btn-lg" id="shapes"></button>
+	<br></br>
+	<button type="button" class="sidebar-button fas fa-eraser btn btn-danger btn-lg" id="clear"></button>
+	<br></br>
+	
+	
+</div>
+
+<!-- Sidebar open button -->
+	<button onclick="openNav()" id="side-open" type="button" class="openbtn fas fa-paint-roller btn btn-dark btn-lg"></button>
+
+</main>
+
+
+
+
+
+
+<!-- Drawing Script -->
+<script src="{{ url_for('static', filename='scripts/drawapp.js') }}"></script>
+
+<!-- Sidebar script -->
+	<script>
+
+		function openNav() {
+			document.getElementById("mySidenav").style.width = "90px";
+		}
+
+		function closeNav() {
+			document.getElementById("mySidenav").style.width = "0";
+		}
+
+	</script>
+
+
+{% endblock %}
+
+</html>

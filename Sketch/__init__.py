@@ -22,6 +22,6 @@ db.init_app(app)
 login_manager.init_app(app)
 
 with app.app_context():
-    from . import routes  # Import routes
-    db.create_all()  # Create sql tables for our data models
+	from . import routes  # Import routes
+	db.create_all()  # Create sql tables for our data models
 

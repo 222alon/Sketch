@@ -38,7 +38,7 @@
 	left: 10px;
 	top: 64px; /* Top margin 10px + 54px for the navbar */
 
-	color: black;
+	color: white;
 	/* font-size: 25px; */
 }
 
@@ -47,7 +47,7 @@
 	position: absolute;
 	right: 25px;
 
-	color: black;
+	color: #818181;
 	/* font-size: 25px; */
 
 }

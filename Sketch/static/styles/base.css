@@ -9,3 +9,7 @@ body {
 	text-align: center;
 	color: rgb(0, 0, 0)
 }
+
+.infront {
+	z-index: 1;
+}

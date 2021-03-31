@@ -1,7 +1,7 @@
-from flask import render_template, request, url_for, redirect, flash, make_response
+from flask import render_template, request, url_for, redirect, flash, make_response, send_from_directory
 import os
 from datetime import datetime
-from flask_login import LoginManager, current_user, logout_user, login_required, login_user
+from flask_login import current_user, logout_user, login_required, login_user
 
 from .models import User, db , login_manager
 from flask import current_app as app
@@ -14,9 +14,9 @@ print("Routes intiated")
 def index():
   return render_template('index.html')
 
-@app.route('/side')
+@app.route('/drawroom')
 def sideBarTest():
-	return render_template('testSideBar.html')
+	return render_template('draw-page.html')
 
 # ERROR HANDLING PAGES
 
