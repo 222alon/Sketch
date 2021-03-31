@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 from flask_login import LoginManager, current_user, logout_user, login_required, login_user
 
-from .models import User, db
+from .models import User, db , login_manager
 from flask import current_app as app
 
 print("Routes intiated")

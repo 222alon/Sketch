@@ -1,10 +1,42 @@
 <html>
 <head>
 	<title>{% block title %}{% endblock %}</title>
+
+	<base href="https://sketchalonlevi.222alon.repl.co/">
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+	<!-- Bootstrap 4 -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+	<!-- Custom css -->
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/base.css') }}">
+	<!-- Custom Icon Library -->
+	<script src="https://kit.fontawesome.com/5cc0f36479.js" crossorigin="anonymous"></script>
+	<!-- TO USE GOTO https://fontawesome.com/icons -->
+
+	{% block headers %} {% endblock %}
+
 </head>
 
 <body>
+	<!-- todo Add class "active" to current page -->
+	<!-- Top Navbar -->
+	<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+		<ul class="navbar-nav">
+			<li class="nav-item">
+				<a class="nav-link" href="index">Home</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link disabled" href="#">Login</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="side">Test</a>
+			</li>
+		</ul>
+	</nav>
+
 	{% block content %}
 	{% endblock %}
 	</body>
