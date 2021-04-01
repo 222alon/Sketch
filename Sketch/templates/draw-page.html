@@ -10,8 +10,8 @@
 {% block content %}
 
 <!-- Drawing Surface -->
-<canvas style="border: 1px solid black;"></canvas>
-
+<canvas style="border: 1px solid black;" id="draw_surface"></canvas>
+<!-- <canvas> </canvas> -->
 <main>
 
 <!-- Sidebar interior -->
@@ -19,13 +19,19 @@
 	<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 	<button type="button" class="sidebar-button fas fa-palette btn btn-light btn-lg" id="colors"> </button>
 	<br></br> 
-	<button type="button" class="sidebar-button fas fa-brush btn btn-light btn-lg" id="thickness"></button>
+	<button type="button" onclick="openThickness()" class="sidebar-button fas fa-brush btn btn-light btn-lg" id="thickness-toggle">&nbsp</button>
 	<br></br> 
+	<div class="slidecontainer" style="display: none" id="thicknessRange">
+		<input type="range" min="1" max="50" value="10" class="slider" id="thickness">
+		<p style="color: white">Size: <span style="color: white" id="displayThickness"></span></p>
+	</div>
+		
+	
 	<button type="button" class="sidebar-button fas fa-fill-drip btn btn-light btn-lg" id="bucket"></button>
 	<br></br>
 	<button type="button" class="sidebar-button fas fa-shapes btn btn-light btn-lg" id="shapes"></button>
 	<br></br>
-	<button type="button" class="sidebar-button fas fa-eraser btn btn-danger btn-lg" id="clear"></button>
+	<button type="button" class="sidebar-button fas fa-trash btn btn-danger btn-lg" id="clear"></button>
 	<br></br>
 	
 	
@@ -34,6 +40,7 @@
 <!-- Sidebar open button -->
 	<button onclick="openNav()" id="side-open" type="button" class="openbtn fas fa-paint-roller btn btn-dark btn-lg"></button>
 
+	
 </main>
 
 
@@ -46,6 +53,27 @@
 
 <!-- Sidebar script -->
 	<script>
+
+		var slider = document.getElementById("thickness");
+		var output = document.getElementById("displayThickness");
+		output.innerHTML = slider.value; // Display the default slider value
+
+
+		// Update the current slider value (each time you drag the slider handle)
+		slider.oninput = function() {
+			output.innerHTML = this.value;
+		}
+
+
+		function openThickness() {
+			let thicknessSlider = document.getElementById("thicknessRange");
+			if (thicknessRange.style.display === "none") {
+				thicknessRange.style.display = "block";
+			} 
+			else {
+				thicknessRange.style.display = "none";
+  }
+		}
 
 		function openNav() {
 			document.getElementById("mySidenav").style.width = "90px";

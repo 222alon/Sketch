@@ -23,7 +23,7 @@ class Stack {
 		}
 	}
 	print() {
-		var top = this.top - 1; // because top points to index where new    element to be inserted
+		var top = this.top - 1; // because top points to index where new element to be inserted
 		while(top >= 0) { // print upto 0th index
 			console.log(this.data[top]);
 				top--;
@@ -50,35 +50,60 @@ const color_picker = document.getElementById('colors');
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 let isDrawing = false;
+let mousePressed = false;
 
-canvas.addEventListener('mousedown', start);
+window.addEventListener('touchstart', startTouch);
+
+window.addEventListener('mousedown', start);
 canvas.addEventListener('mousemove', draw);
-canvas.addEventListener('mouseup', stop);
+window.addEventListener('mouseup', stop);
+canvas.addEventListener('mouseout', outsideTrigger);
 
 clearButton.addEventListener('click', clearCanvas);
 
+function startTouch(e) {
+	
+
+}
+
+function outsideTrigger() {
+	if (isDrawing) {
+		isDrawing = false;
+  	ctx.beginPath();
+
+		strokes.push(cur_stroke)
+		cur_stroke = new Stack();
+	}
+}
+
 function start (e) {
   isDrawing = true;
+	mousePressed = true;
   draw(e);
 }
 
 function draw ({clientX: x, clientY: y}) {
+	if (mousePressed) isDrawing = true;
   if (!isDrawing) return;
-  // ctx.lineWidth = stroke_weight.value;
-	ctx.lineWidth = 5;
+	
+  ctx.lineWidth = stroke_weight.value;
   ctx.lineCap = "round";
   // ctx.strokeStyle = color_picker.value;
 	ctx.strokeStyle = "#000000";
 
-	cur_stroke.push({ypos: y-56, xpos: x, thickness: 5})
+	scrolledYOffset = window.scrollY;
+	scrolledXOffset = window.scrollX;
+
+	cur_stroke.push({ypos: y-canvas.offsetTop+scrolledYOffset, xpos: x-canvas.offsetLeft+scrolledXOffset, thickness: stroke_weight.value});
 	
-  ctx.lineTo(x, y-56);
+  ctx.lineTo(x-canvas.offsetLeft+scrolledXOffset, y-canvas.offsetTop+scrolledYOffset);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(x, y-56);
+  ctx.moveTo(x-canvas.offsetLeft+scrolledXOffset, y-canvas.offsetTop+scrolledYOffset);
 }
 
-function stop () {
+function stop() {
+	mousePressed = false;
   isDrawing = false;
   ctx.beginPath();
 
@@ -93,6 +118,7 @@ function undo (e){
 
 	ctx.strokeStyle = "#fafafa";
 
+
 	let cancel_x = 0;
 	let cancel_y = 0;
 
@@ -100,11 +126,12 @@ function undo (e){
 
 	let max_len = canceled_stroke.length();
 
+	ctx.lineWidth = parseInt(canceled_stroke.peek().thickness,10)+1;
+
 	for (i = 0; i < max_len; i++) {
 		pos = canceled_stroke.pop();
 		cancel_x = pos.xpos;
 		cancel_y = pos.ypos;
-		ctx.lineWidth = pos.thickness+2;
 
 		ctx.lineTo(cancel_x, cancel_y);
   	ctx.stroke();
@@ -122,7 +149,7 @@ function clearCanvas () {
 
 // window.addEventListener('resize', resizeCanvas);
 function resizeCanvas () {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight-56;
+  canvas.width = window.innerWidth-2;
+  canvas.height = window.innerHeight-canvas.offsetTop-2;
 }
 resizeCanvas();
