@@ -16,9 +16,9 @@
 	display: none;
 
 	position: absolute;
-	top: 5%;
-	margin-left: 95px;
-	width: 10%;
+	top: 7%;
+	margin-left: 100px;
+	width: 205px;
 	
 	color: whitesmoke;
 	background-color: #111;
@@ -94,4 +94,8 @@
   height: 25px; /* Slider handle height */
   background: rgb(0, 0, 0); /* Green background */
   cursor: pointer; /* Cursor on hover */
+}
+
+.color-radio {
+	display: none;
 }

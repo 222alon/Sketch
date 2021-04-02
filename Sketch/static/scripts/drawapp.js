@@ -47,7 +47,7 @@ var cur_stroke = new Stack();
 
 const clearButton = document.getElementById('clear');
 const stroke_weight = document.getElementById('thickness');
-const color_picker = document.getElementById('colors');
+// const color_picker = document.getElementById('colors');
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
@@ -109,9 +109,9 @@ function draw (x, y) {
   if (!isDrawing) return;
 	
   ctx.lineWidth = stroke_weight.value;
+	color = document.querySelector('input[name="color"]:checked').value;
   ctx.lineCap = "round";
-  // ctx.strokeStyle = color_picker.value;
-	ctx.strokeStyle = "#000000";
+  ctx.strokeStyle = color;
 
 	let scrolledYOffset = window.scrollY;
 	let scrolledXOffset = window.scrollX;
@@ -151,7 +151,7 @@ function undo (e){
 
 	let max_len = canceled_stroke.length();
 
-	ctx.lineWidth = parseInt(canceled_stroke.peek().thickness,10)+1;
+	ctx.lineWidth = parseInt(canceled_stroke.peek().thickness,10)+2;
 
 	for (i = 0; i < max_len; i++) {
 		pos = canceled_stroke.pop();

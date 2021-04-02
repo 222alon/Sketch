@@ -18,7 +18,11 @@
 <div class="color-picker card text-white bg-dark mb-3" id="colorPicker">
 	<div class="card-header center">Colors</div>
 	<div class="card-body"> 
-
+		{% for color in colors: %}
+  <label class="btn btn-secondary">
+    <input class="color-radio" type="radio" name="color" id="color{{loop.index}}" autocomplete="off" checked value="{{color}}" ><i class="fas fa-tint" style="color: {{color}};"></i>
+  </label>
+	  {% endfor %}
 	</div>
 </div>
 
