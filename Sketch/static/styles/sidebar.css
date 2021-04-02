@@ -12,6 +12,18 @@
   padding-top: 60px;
 }
 
+.color-picker{
+	display: none;
+
+	position: absolute;
+	top: 5%;
+	margin-left: 95px;
+	width: 10%;
+	
+	color: whitesmoke;
+	background-color: #111;
+	
+}
 
 .sidenav .closebtn {
 	color:whitesmoke;

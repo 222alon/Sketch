@@ -14,13 +14,24 @@
 <!-- <canvas> </canvas> -->
 <main>
 
+<!-- The color picking tool -->
+<div class="color-picker card text-white bg-dark mb-3" id="colorPicker">
+	<div class="card-header center">Colors</div>
+	<div class="card-body"> 
+
+	</div>
+</div>
+
 <!-- Sidebar interior -->
 <div id="mySidenav" class="sidenav">
+	<!-- The color picking button -->
 	<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-	<button type="button" class="sidebar-button fas fa-palette btn btn-light btn-lg" id="colors"> </button>
+	<button type="button" onclick="openColors()" class="sidebar-button fas fa-palette btn btn-light btn-lg" id="colorPickerBtn"> </button>
 	<br></br> 
+	<!-- The thickness picking button -->
 	<button type="button" onclick="openThickness()" class="sidebar-button fas fa-brush btn btn-light btn-lg" id="thickness-toggle">&nbsp</button>
 	<br></br> 
+	<!-- The thickness picking tool -->
 	<div class="slidecontainer" style="display: none" id="thicknessRange">
 		<input type="range" min="1" max="50" value="10" class="slider" id="thickness">
 		<p style="color: white">Size: <span style="color: white" id="displayThickness"></span></p>
@@ -49,7 +60,8 @@
 
 
 <!-- Drawing Script -->
-<script src="{{ url_for('static', filename='scripts/drawapp.js') }}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='scripts/drawapp.js') }}" ></script>
 
 <!-- Sidebar script -->
 	<script>
@@ -58,12 +70,31 @@
 		var output = document.getElementById("displayThickness");
 		output.innerHTML = slider.value; // Display the default slider value
 
-
 		// Update the current slider value (each time you drag the slider handle)
 		slider.oninput = function() {
 			output.innerHTML = this.value;
 		}
 
+		// function openColors() {
+		// 	let colorPicker = document.getElementById("colorPicker");
+		// 	if (colorPicker.style.width === "10%") {
+		// 		colorPicker.style.width = "0%";
+		// 	}
+		// 	else {
+		// 		colorPicker.style.width = "10%";
+		// 	}
+		// }
+
+		
+		function openColors() {
+			let colorPicker = document.getElementById("colorPicker");
+			if (colorPicker.style.display === "block") {
+				colorPicker.style.display = "none";
+			}
+			else {
+				colorPicker.style.display = "block";
+			}
+		}
 
 		function openThickness() {
 			let thicknessSlider = document.getElementById("thicknessRange");
@@ -80,7 +111,7 @@
 		}
 
 		function closeNav() {
-			document.getElementById("mySidenav").style.width = "0";
+			document.getElementById("mySidenav").style.width = "0px";
 		}
 
 	</script>

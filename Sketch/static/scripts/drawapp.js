@@ -40,6 +40,8 @@ class Stack {
 	}
 }
 
+// const io = require("socket.io-client");
+
 var strokes = new Stack();
 var cur_stroke = new Stack();
 
@@ -53,18 +55,30 @@ let isDrawing = false;
 let mousePressed = false;
 
 window.addEventListener('touchstart', startTouch);
+canvas.addEventListener('touchmove', touchMove);
+window.addEventListener('touchend', stop);
 
 window.addEventListener('mousedown', start);
-canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mousemove', mouseMove);
 window.addEventListener('mouseup', stop);
 canvas.addEventListener('mouseout', outsideTrigger);
 
 clearButton.addEventListener('click', clearCanvas);
 
 function startTouch(e) {
-	
-
+	isDrawing = true;
+	mousePressed = true;
+	clientX = e.touches[0].clientX;
+  clientY = e.touches[0].clientY;
+	draw(clientX, clientY)
 }
+
+function touchMove(e) {
+	clientX = e.touches[0].clientX;
+  clientY = e.touches[0].clientY;
+	draw(clientX, clientY)
+}
+
 
 function outsideTrigger() {
 	if (isDrawing) {
@@ -79,10 +93,18 @@ function outsideTrigger() {
 function start (e) {
   isDrawing = true;
 	mousePressed = true;
-  draw(e);
+	clientX = e.clientX;
+  clientY = e.clientY;
+	draw(clientX, clientY)
 }
 
-function draw ({clientX: x, clientY: y}) {
+function mouseMove(e){
+	clientX = e.clientX;
+  clientY = e.clientY;
+	draw(clientX, clientY)
+}
+
+function draw (x, y) {
 	if (mousePressed) isDrawing = true;
   if (!isDrawing) return;
 	
@@ -91,15 +113,18 @@ function draw ({clientX: x, clientY: y}) {
   // ctx.strokeStyle = color_picker.value;
 	ctx.strokeStyle = "#000000";
 
-	scrolledYOffset = window.scrollY;
-	scrolledXOffset = window.scrollX;
+	let scrolledYOffset = window.scrollY;
+	let scrolledXOffset = window.scrollX;
 
-	cur_stroke.push({ypos: y-canvas.offsetTop+scrolledYOffset, xpos: x-canvas.offsetLeft+scrolledXOffset, thickness: stroke_weight.value});
+	let canvasYoffset = canvas.offsetTop;
+	let canvasXoffset = canvas.offsetLeft;
+
+	cur_stroke.push({ypos: y-canvasYoffset+scrolledYOffset, xpos: x-canvasXoffset+scrolledXOffset, thickness: stroke_weight.value});
 	
-  ctx.lineTo(x-canvas.offsetLeft+scrolledXOffset, y-canvas.offsetTop+scrolledYOffset);
+  ctx.lineTo(x-canvas.offsetLeft+scrolledXOffset, y-canvasYoffset+scrolledYOffset);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(x-canvas.offsetLeft+scrolledXOffset, y-canvas.offsetTop+scrolledYOffset);
+  ctx.moveTo(x-canvasXoffset+scrolledXOffset, y-canvasYoffset+scrolledYOffset);
 }
 
 function stop() {
