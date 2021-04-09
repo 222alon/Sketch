@@ -47,27 +47,35 @@ var cur_stroke = new Stack();
 
 const clearButton = document.getElementById('clear');
 const stroke_weight = document.getElementById('thickness');
-// const color_picker = document.getElementById('colors');
+
+// const sideBar = document.getElementById("mySidenav");
+// const colorPicker = document.getElementById("colorPicker")
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 let isDrawing = false;
 let mousePressed = false;
 
-window.addEventListener('touchstart', startTouch);
+window.addEventListener('touchstart', touchOutsideCanvas);
+window.addEventListener('mousedown', touchOutsideCanvas);
+
+canvas.addEventListener('touchstart', startTouch);
 canvas.addEventListener('touchmove', touchMove);
 window.addEventListener('touchend', stop);
 
-window.addEventListener('mousedown', start);
-canvas.addEventListener('mousemove', mouseMove);
+canvas.addEventListener('mousedown', start);
+window.addEventListener('mousemove', mouseMove);
 window.addEventListener('mouseup', stop);
 canvas.addEventListener('mouseout', outsideTrigger);
 
 clearButton.addEventListener('click', clearCanvas);
 
+function touchOutsideCanvas() {
+	mousePressed = true;
+}
+
 function startTouch(e) {
 	isDrawing = true;
-	mousePressed = true;
 	clientX = e.touches[0].clientX;
   clientY = e.touches[0].clientY;
 	draw(clientX, clientY)
@@ -91,7 +99,6 @@ function outsideTrigger() {
 }
 
 function start (e) {
-  isDrawing = true;
 	mousePressed = true;
 	clientX = e.clientX;
   clientY = e.clientY;
@@ -105,6 +112,7 @@ function mouseMove(e){
 }
 
 function draw (x, y) {
+
 	if (mousePressed) isDrawing = true;
   if (!isDrawing) return;
 	
@@ -130,10 +138,13 @@ function draw (x, y) {
 function stop() {
 	mousePressed = false;
   isDrawing = false;
+	
+	if (cur_stroke.length() != 0) {
   ctx.beginPath();
 
 	strokes.push(cur_stroke)
 	cur_stroke = new Stack();
+	}
 }
 
 document.onkeydown = undo;

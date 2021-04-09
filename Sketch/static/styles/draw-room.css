@@ -12,19 +12,6 @@
   padding-top: 60px;
 }
 
-.color-picker{
-	display: none;
-
-	position: absolute;
-	top: 7%;
-	margin-left: 100px;
-	width: 205px;
-	
-	color: whitesmoke;
-	background-color: #111;
-	
-}
-
 .sidenav .closebtn {
 	color:whitesmoke;
   position: absolute;
@@ -92,10 +79,59 @@
 .slidecontainer .slider::-moz-range-thumb {
   width: 25px; /* Set a specific slider handle width */
   height: 25px; /* Slider handle height */
-  background: rgb(0, 0, 0); /* Green background */
+  background: rgb(0, 0, 0); /* Black background */
   cursor: pointer; /* Cursor on hover */
+}
+
+.cards-parent {
+	position: absolute;
+	top: 4%;
+	margin-left: 100px;
+	width: 225px;
+
+
+}
+
+.color-picker{
+	display: none;
+
+	position: relative;
+	margin-top: 20px;
+
+	width: 205px;
+
+}
+
+.thickness-picker {
+	display: none;
+
+	position: relative;
+	margin-top: 20px;
+
+	width: 205px;
+	
 }
 
 .color-radio {
 	display: none;
+}
+
+.card-closer {
+	color: #fafafa;
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+.card-closer:hover {
+	color: #ffffff;
+}
+
+.custom-canvas {
+	border: 1px solid black;
+	position: static;
+	
+	z-index: -1;
 }

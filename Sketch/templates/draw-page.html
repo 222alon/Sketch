@@ -3,26 +3,38 @@
 {% block headers %}
 
 		<!-- My Custom CSS -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/sidebar.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/draw-room.css') }}">
 	{% endblock %}
 
 
 {% block content %}
 
 <!-- Drawing Surface -->
-<canvas style="border: 1px solid black;" id="draw_surface"></canvas>
+<canvas class="custom-canvas" id="draw_surface" oncontextmenu="return false;"></canvas>
 <!-- <canvas> </canvas> -->
 <main>
 
-<!-- The color picking tool -->
-<div class="color-picker card text-white bg-dark mb-3" id="colorPicker">
-	<div class="card-header center">Colors</div>
-	<div class="card-body"> 
-		{% for color in colors: %}
-  <label class="btn btn-secondary">
-    <input class="color-radio" type="radio" name="color" id="color{{loop.index}}" autocomplete="off" checked value="{{color}}" ><i class="fas fa-tint" style="color: {{color}};"></i>
-  </label>
-	  {% endfor %}
+<!-- Holder of the cards -->
+<div class="cards-parent noselect"> 
+	<!-- The color picking tool -->
+	<div class="color-picker card text-white bg-dark mb-3" id="colorPicker">
+		<div class="card-header"><a href="javascript:void(0)" class="card-closer" onclick="openColors()">&times;</a>Colors</div>
+		<div class="card-body"> 
+			{% for color in colors: %}
+		<label class="btn btn-secondary">
+			<input class="color-radio" type="radio" name="color" id="color{{loop.index}}" autocomplete="off" checked value="{{color}}" ><i class="fas fa-tint" style="color: {{color}};"></i>
+		</label>
+			{% endfor %}
+		</div>
+	</div>
+	<!-- The thickness picking tool -->
+	<div class="thickness-picker card text-white bg-dark mb-3" id="thicknessPicker">
+		<div class="card-header"><a href="javascript:void(0)" class="card-closer" onclick="openThickness()">&times;</a>Thickness</div>
+		<div class="card-body"> 
+			<div class="slidecontainer" id="thicknessRange">
+			<input type="range" min="1" max="50" value="10" class="slider" id="thickness">
+			<p style="color: white">Size: <span style="color: white" id="displayThickness"></span></p>
+		</div>
 	</div>
 </div>
 
@@ -35,13 +47,7 @@
 	<!-- The thickness picking button -->
 	<button type="button" onclick="openThickness()" class="sidebar-button fas fa-brush btn btn-light btn-lg" id="thickness-toggle">&nbsp</button>
 	<br></br> 
-	<!-- The thickness picking tool -->
-	<div class="slidecontainer" style="display: none" id="thicknessRange">
-		<input type="range" min="1" max="50" value="10" class="slider" id="thickness">
-		<p style="color: white">Size: <span style="color: white" id="displayThickness"></span></p>
-	</div>
-		
-	
+
 	<button type="button" class="sidebar-button fas fa-fill-drip btn btn-light btn-lg" id="bucket"></button>
 	<br></br>
 	<button type="button" class="sidebar-button fas fa-shapes btn btn-light btn-lg" id="shapes"></button>
@@ -101,12 +107,12 @@
 		}
 
 		function openThickness() {
-			let thicknessSlider = document.getElementById("thicknessRange");
-			if (thicknessRange.style.display === "none") {
-				thicknessRange.style.display = "block";
+			let thicknessRange = document.getElementById("thicknessPicker");
+			if (thicknessRange.style.display === "block") {
+				thicknessRange.style.display = "none";
 			} 
 			else {
-				thicknessRange.style.display = "none";
+				thicknessRange.style.display = "block";
   }
 		}
 
