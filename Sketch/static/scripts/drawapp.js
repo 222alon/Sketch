@@ -1,55 +1,8 @@
-class Stack {
-	constructor(){
-		this.data = [];
-		this.top = 0;
-	}
-	push(element) {
-		this.data[this.top] = element;
-		this.top = this.top + 1;
-	}
-	length() {
-		return this.top;
-	}
-	peek() {
-		return this.data[this.top-1];
-	}
-	isEmpty() {
-		return this.top === 0;
-	}
-	pop() {
-	if( this.isEmpty() === false ) {
-		this.top = this.top -1;
-		return this.data.pop(); // removes the last element
-		}
-	}
-	print() {
-		var top = this.top - 1; // because top points to index where new element to be inserted
-		while(top >= 0) { // print upto 0th index
-			console.log(this.data[top]);
-				top--;
-			}
-	}
-	reverse() {
-			this._reverse(this.top - 1 );
-	}
-	_reverse(index) {
-			if(index != 0) {
-				this._reverse(index-1);
-			}
-			console.log(this.data[index]);
-	}
-}
-
-// const io = require("socket.io-client");
-
-var strokes = new Stack();
-var cur_stroke = new Stack();
+var strokes = [];
+var cur_stroke = [];
 
 const clearButton = document.getElementById('clear');
 const stroke_weight = document.getElementById('thickness');
-
-// const sideBar = document.getElementById("mySidenav");
-// const colorPicker = document.getElementById("colorPicker")
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
@@ -127,7 +80,7 @@ function draw (x, y) {
 	let canvasYoffset = canvas.offsetTop;
 	let canvasXoffset = canvas.offsetLeft;
 
-	cur_stroke.push({ypos: y-canvasYoffset+scrolledYOffset, xpos: x-canvasXoffset+scrolledXOffset, thickness: stroke_weight.value});
+	cur_stroke.push({ypos: y-canvasYoffset+scrolledYOffset, xpos: x-canvasXoffset+scrolledXOffset, thickness: stroke_weight.value, point_color: color});
 	
   ctx.lineTo(x-canvas.offsetLeft+scrolledXOffset, y-canvasYoffset+scrolledYOffset);
   ctx.stroke();
@@ -139,11 +92,11 @@ function stop() {
 	mousePressed = false;
   isDrawing = false;
 	
-	if (cur_stroke.length() != 0) {
+	if (cur_stroke.length != 0) {
   ctx.beginPath();
 
 	strokes.push(cur_stroke)
-	cur_stroke = new Stack();
+	cur_stroke = [];
 	}
 }
 
@@ -152,30 +105,32 @@ function undo (e){
 	var check_pressed = window.event? event : e
   if (!(check_pressed.keyCode == 90 && check_pressed.ctrlKey && !isDrawing)) return;
 
-	ctx.strokeStyle = "#fafafa";
-
-
-	let cancel_x = 0;
-	let cancel_y = 0;
+	let cur_x = 0;
+	let cur_y = 0;
 
 	let canceled_stroke = strokes.pop();
 
-	let max_len = canceled_stroke.length();
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	ctx.lineWidth = parseInt(canceled_stroke.peek().thickness,10)+2;
+	strokes.forEach(function (stroke, strokeIndex) {
+		stroke.forEach(function (pos , pointIndex){
 
-	for (i = 0; i < max_len; i++) {
-		pos = canceled_stroke.pop();
-		cancel_x = pos.xpos;
-		cancel_y = pos.ypos;
+			ctx.strokeStyle = pos.point_color;
+			ctx.lineWidth = parseInt(pos.thickness, 10);
+			cur_x = pos.xpos;
+			cur_y = pos.ypos;
 
-		ctx.lineTo(cancel_x, cancel_y);
-  	ctx.stroke();
-  	ctx.beginPath();
-  	ctx.moveTo(cancel_x, cancel_y);
+			
+			ctx.lineTo(cur_x, cur_y);
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(cur_x, cur_y);
 
-}
-ctx.beginPath();
+
+
+		})
+	ctx.beginPath();
+	});
 }
 
 
