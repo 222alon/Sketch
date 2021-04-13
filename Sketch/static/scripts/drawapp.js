@@ -1,5 +1,4 @@
 var socket = io('https://' + document.domain + ':' + location.port ,{ secure: true });
-// var socket = io();
 
 var strokes = [];
 var cur_stroke = [];
@@ -97,6 +96,7 @@ function stop() {
   ctx.beginPath();
 
 	strokes.push(cur_stroke)
+	socket.emit('new-stroke', cur_stroke);
 	cur_stroke = [];
 	}
 }
@@ -148,8 +148,40 @@ resizeCanvas();
 
 // -------SocketIO stuff---------
 
+// var testAr = [1,2,3,4];
+
 socket.on('connect', function() {
 	console.log("Connected!");
-  // socket.emit('my event', {data: 'I\'m connected!'});
+  // socket.emit('testArray', testAr);
+});
+
+socket.on('load-canvas', function(data) {
+	console.log("Loading canvas from server memory");
+	
+	let cur_x = 0;
+	let cur_y = 0;
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	data.forEach(function (stroke, strokeIndex) {
+		stroke.forEach(function (pos , pointIndex){
+
+			ctx.strokeStyle = pos.point_color;
+			ctx.lineWidth = parseInt(pos.thickness, 10);
+			cur_x = pos.xpos;
+			cur_y = pos.ypos;
+
+			
+			ctx.lineTo(cur_x, cur_y);
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(cur_x, cur_y);
+
+
+
+		})
+	ctx.beginPath();
+	});
+
 });
 
