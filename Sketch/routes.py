@@ -2,12 +2,14 @@ from flask import render_template, request, url_for, redirect, flash, make_respo
 import os
 from datetime import datetime
 from flask_login import current_user, logout_user, login_required, login_user
-from flask_socketio import SocketIO
 
 from .models import User, db , login_manager
 from flask import current_app as app
+from . import socketio
 
 print("Routes intiated")
+
+# socketio = SocketIO(app)
 
 colors = ['#fafafa', '#FFBCC8', '#FF9B9B','#FFB392','#FFF585','#D8FF8F','#AAFFC0','#BDFBFD','#B5D1FF','#C2ACFF','#7E7E7E','#000000']
 
@@ -28,3 +30,13 @@ def not_found(error):
   # Handle a 404 error
   # todo update 404error.html to be better
   return make_response(render_template('404error.html'), 404)
+
+# SocketIO stuff
+
+@socketio.on("connect")
+def handle_connect():
+	pass
+
+@socketio.on("disconnect")
+def handle_disconnect():
+	pass

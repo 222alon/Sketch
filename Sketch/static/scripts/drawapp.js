@@ -1,3 +1,6 @@
+var socket = io('https://' + document.domain + ':' + location.port ,{ secure: true });
+// var socket = io();
+
 var strokes = [];
 var cur_stroke = [];
 
@@ -46,8 +49,6 @@ function outsideTrigger() {
 		isDrawing = false;
   	ctx.beginPath();
 
-		strokes.push(cur_stroke)
-		cur_stroke = new Stack();
 	}
 }
 
@@ -144,3 +145,11 @@ function resizeCanvas () {
   canvas.height = window.innerHeight-canvas.offsetTop-2;
 }
 resizeCanvas();
+
+// -------SocketIO stuff---------
+
+socket.on('connect', function() {
+	console.log("Connected!");
+  // socket.emit('my event', {data: 'I\'m connected!'});
+});
+
