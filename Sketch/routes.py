@@ -6,6 +6,8 @@ from flask_login import current_user, logout_user, login_required, login_user
 from .models import User, db , login_manager
 from flask import current_app as app
 from . import socketio
+from flask_socketio import send, emit
+
 
 # Class for handling all the strokes in the Draw Room
 
@@ -17,7 +19,8 @@ class canvas_strokes:
 		self.strokes.append(stroke)
 
 	def undo(self):
-		self.strokes.pop()
+		if (len(self.strokes) > 0):
+			self.strokes.pop()
 
 	def delete_canvas(self):
 		self.strokes = []
@@ -53,7 +56,7 @@ def not_found(error):
 @socketio.on("connect")
 def handle_connect():
 	print("User connected!")
-	socketio.emit("load-canvas", draw_state.strokes)
+	emit("load-canvas", draw_state.strokes)
 
 @socketio.on("disconnect")
 def handle_disconnect():
@@ -62,7 +65,21 @@ def handle_disconnect():
 @socketio.on("new-stroke")
 def new_stroke(data):
 	draw_state.addStroke(data)
+	emit("new-stroke", data, broadcast=True)
 	print("Stroke Added with a total of " + str(len(data)))
+
+@socketio.on("undo")
+def undo_stroke():
+	draw_state.undo()
+	print("Undid a stroke")
+	emit("load-canvas", draw_state.strokes, broadcast=True)
+
+@socketio.on("clear")
+def clear_canvas():
+	print("Deleted canvas!")
+	draw_state.delete_canvas()
+	emit("load-canvas", draw_state.strokes, broadcast=True)
+
 
 # @socketio.on("testArray")
 # def testGettingArray(data):

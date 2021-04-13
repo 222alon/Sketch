@@ -1,6 +1,5 @@
 var socket = io('https://' + document.domain + ':' + location.port ,{ secure: true });
 
-var strokes = [];
 var cur_stroke = [];
 
 const clearButton = document.getElementById('clear');
@@ -95,7 +94,6 @@ function stop() {
 	if (cur_stroke.length != 0) {
   ctx.beginPath();
 
-	strokes.push(cur_stroke)
 	socket.emit('new-stroke', cur_stroke);
 	cur_stroke = [];
 	}
@@ -106,15 +104,35 @@ function undo (e){
 	var check_pressed = window.event? event : e
   if (!(check_pressed.keyCode == 90 && check_pressed.ctrlKey && !isDrawing)) return;
 
-	let cur_x = 0;
-	let cur_y = 0;
+	socket.emit('undo');
 
-	let canceled_stroke = strokes.pop();
+};
 
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	strokes.forEach(function (stroke, strokeIndex) {
-		stroke.forEach(function (pos , pointIndex){
+function clearCanvas () {
+	socket.emit('clear');
+  // ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// window.addEventListener('resize', resizeCanvas);
+function resizeCanvas () {
+  canvas.width = window.innerWidth-2;
+  canvas.height = window.innerHeight-canvas.offsetTop-2;
+}
+resizeCanvas();
+
+// -------SocketIO stuff---------
+
+socket.on('connect', function() {
+	console.log("Connected!");
+});
+
+socket.on('new-stroke', function(data){
+	console.log("Adding stroke from another client!")
+
+	ctx.beginPath();
+
+	data.forEach(function (pos , pointIndex){
 
 			ctx.strokeStyle = pos.point_color;
 			ctx.lineWidth = parseInt(pos.thickness, 10);
@@ -127,37 +145,15 @@ function undo (e){
 			ctx.beginPath();
 			ctx.moveTo(cur_x, cur_y);
 
-
-
 		})
 	ctx.beginPath();
-	});
-}
-
-
-function clearCanvas () {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-// window.addEventListener('resize', resizeCanvas);
-function resizeCanvas () {
-  canvas.width = window.innerWidth-2;
-  canvas.height = window.innerHeight-canvas.offsetTop-2;
-}
-resizeCanvas();
-
-// -------SocketIO stuff---------
-
-// var testAr = [1,2,3,4];
-
-socket.on('connect', function() {
-	console.log("Connected!");
-  // socket.emit('testArray', testAr);
 });
 
 socket.on('load-canvas', function(data) {
 	console.log("Loading canvas from server memory");
 	
+	ctx.lineCap = "round";
+
 	let cur_x = 0;
 	let cur_y = 0;
 
