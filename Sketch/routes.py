@@ -74,6 +74,14 @@ def undo_stroke():
 	print("Undid a stroke")
 	emit("load-canvas", draw_state.strokes, broadcast=True)
 
+@socketio.on("refresh-canvas")
+def refresh_canvas():
+	emit("load-canvas", draw_state.strokes)
+
+@socketio.on("mid-stroke")
+def update_cur_strokes(data):
+	emit("new-stroke", data, broadcast=True, include_self=False)
+
 @socketio.on("clear")
 def clear_canvas():
 	print("Deleted canvas!")

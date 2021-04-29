@@ -18,6 +18,22 @@ body {
   height: 56px;
 } */
 
+.right-nav-el {
+	display: inline-block;
+	color: #292b2c;
+	background: #fafafa;
+	padding: 0.5em 1em;
+	border-radius: 5px;
+
+	margin-left: auto;
+}
+
+.center-horizon {
+	margin-left: auto;
+	/* transition: margin-left 250ms ease-in-out; */
+}
+
+
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
