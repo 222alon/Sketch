@@ -1,0 +1,31 @@
+{% extends "base.html"%}
+{% block title %} Register {% endblock %}
+
+{% block headers %}
+
+		<!-- My Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/forms.css') }}">
+
+{% endblock %}
+
+{% block content %}
+
+	<form method = "post" action = "" class="form-page">
+		<h1>Sketch Sign Up</h1>
+		</br>
+		<label for="user">Email:</label>
+		<input type = "text" id = "email" name = "email" placeholder="generic@email.com" required>
+		<label for="user">Username:</label>
+		<input type = "text" id = "user" name = "username" placeholder="Username" required>
+		<label for="pass">Password:</label>
+		<input type = "password" id = "pass" name = "password" placeholder="Password" required>
+		<label for="pass">Confirm Password:</label>
+		<input type = "password" id = "pass_conf" name = "pass_conf" placeholder="Same Password" required>
+		<input type = "submit" value = "Sign Up">
+		<p>Already have a user? <a href="/login">Login</a></p>
+		{% if err %}
+		<p class="error-msg">{{err}}</p>
+		{% endif %}
+	</form>
+
+{% endblock %}

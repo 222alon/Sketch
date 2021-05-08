@@ -1,0 +1,28 @@
+{% extends "base.html"%}
+{% block title %} Login {% endblock %}
+
+{% block headers %}
+
+		<!-- My Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/forms.css') }}">
+
+{% endblock %}
+
+{% block content %}
+
+	<form method = "post" action = "" class="form-page">
+		<h1>Sketch Login</h1>
+		</br>
+		<label for="user">Username:</label>
+		<input type = "text" id = "user" name = "username" placeholder="Username" required>
+		<label for="pass">Password:</label>
+		<input type = "password" id = "pass" name = "password" placeholder="Password" required>
+		<input type = "submit" value = "Sign In">
+		<p>Don't have a user? <a href="/register">Sign Up</a></p>
+		<p>Forgot your password? <a href="/recover">Recover</a></p>
+		{% if err %}
+		<p class="error-msg">{{err}}</p>
+		{% endif %}
+	</form>
+
+{% endblock %}

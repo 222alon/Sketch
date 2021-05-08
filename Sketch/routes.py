@@ -1,4 +1,4 @@
-from flask import render_template, request, url_for, redirect, flash, make_response, send_from_directory
+from flask import render_template, request, url_for, redirect, make_response, session
 import os
 from datetime import datetime
 from flask_login import current_user, logout_user, login_required, login_user
@@ -7,6 +7,7 @@ from .models import User, db , login_manager
 from flask import current_app as app
 from . import socketio
 from flask_socketio import send, emit
+
 
 
 # Class for handling all the strokes in the Draw Room
@@ -38,11 +39,67 @@ draw_state = canvas_strokes()
 def index():
   return render_template('index.html')
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+	if not current_user.is_authenticated:
+		if 'user' in session:
+			if logged_user := User.query.filter_by(username=session['user']).first():
+				login_user(logged_user)
+				redirect(url_for('index'))
+		if request.method == 'POST':
+			name = request.form['username']
+			password = request.form['password']
+			if logged_user := User.query.filter_by(username= name).first():
+				if logged_user.validate_password(password):
+					session['user'] = logged_user.username
+					login_user(logged_user)
+					print(current_user)
+					return redirect(url_for('index'))
+			return render_template('login.html', err = 'Invalid credentials')
+		return render_template('login.html')
+	return redirect(url_for('index'))
+
+@app.route('/register', methods=['GET', 'POST'])
+def signup():
+	if request.method == 'POST':
+		email = request.form['email']
+		name = request.form['username']
+		password = request.form['password']
+		conf_password = request.form['pass_conf']
+
+		user = User.query.filter_by(email=email).first()
+		if user:
+			return render_template('signup.html', err='This email is already registered.')
+		if password != conf_password:
+			return render_template('signup.html', err='Password does not match.')
+
+		new_user = User(email=email, username=name, password=password)
+
+		db.session.add(new_user)
+		db.session.commit()
+
+		return redirect(url_for('login'))
+
+	return render_template('signup.html')
+
+@app.route('/logout')
+def logout():
+	if 'user' in session:
+		session['user'] = ''
+		logout_user()
+	return redirect(url_for('login'))
+
+
 @app.route('/drawroom')
 def sideBarTest():
 	return render_template('draw-page.html', colors = colors)
 
 # ERROR HANDLING PAGES
+
+@login_manager.unauthorized_handler
+def unauthorized():
+	return redirect(url_for('login'), err = 'Login to access this')
+
 
 @app.errorhandler(404)
 def not_found(error):

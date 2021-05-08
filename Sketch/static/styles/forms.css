@@ -1,0 +1,57 @@
+.form-page {
+	background: var(--background-color-darker);
+
+	display: flex;
+	flex-flow: column nowrap;
+
+	overflow: auto;
+
+	height: calc(100% - 56px);
+	width: 90%;
+	margin: 0 auto;
+
+	text-align: center;
+}
+
+.form-page > * {
+	color: var(--dark-color);
+}
+
+.form-page > h1,
+.form-page > label {
+	padding: 1em 0.5em;
+}
+
+.form-page > input {
+	margin: 0 3em;
+	padding: .5em 1em;
+	border-radius: .3em;
+}
+
+.form-page > input[type=submit] {
+
+
+	white-space: nowrap;
+
+	background:	var(--dark-color);
+	color: var(--background-color);
+
+	margin: 1em 3em;
+	padding: 1em 2em;
+	border-radius: 10em;
+}
+
+.form-page > input[type=submit]:hover,
+.form-page > input[type=submit]:focus {
+	color: var(--dark-color);
+	background: var(--background-color);
+	border-style: solid;
+	text-decoration: none;
+}
+
+.error-msg {
+	width: 30%;
+	margin: 0 auto;
+	margin-bottom: 2em;
+	border-bottom: 1px var(--dark-color) solid;
+}
