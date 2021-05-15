@@ -34,6 +34,11 @@ colors = ['#fafafa', '#FFBCC8', '#FF9B9B','#FFB392','#FFF585','#D8FF8F','#AAFFC0
 
 draw_state = canvas_strokes()
 
+@app.route('/harry')
+@app.route('/garry')
+def garry():
+  return render_template('garry.html')
+
 @app.route('/index')
 @app.route('/')
 def index():
@@ -144,11 +149,6 @@ def clear_canvas():
 	print("Deleted canvas!")
 	draw_state.delete_canvas()
 	emit("load-canvas", draw_state.strokes, broadcast=True)
-
-
-# @socketio.on("testArray")
-# def testGettingArray(data):
-# 	print(type(data))
 
 
 

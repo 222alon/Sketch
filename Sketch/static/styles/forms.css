@@ -1,6 +1,8 @@
 .form-page {
 	background: var(--background-color-darker);
 
+	overflow: auto;
+
 	display: flex;
 	flex-flow: column nowrap;
 
@@ -11,6 +13,7 @@
 	margin: 0 auto;
 
 	text-align: center;
+	align-items: center;
 }
 
 .form-page > * {
@@ -27,7 +30,12 @@
 	padding: .5em 1em;
 	border-radius: .3em;
 }
-
+.form-page > input[type=text],
+.form-page > input[type=password],
+.form-page > input[type=email] {
+	width: 80%;
+	max-width: 25em;
+}
 .form-page > input[type=submit] {
 
 

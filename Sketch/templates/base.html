@@ -46,13 +46,18 @@
 				<li class="nav-item">
 					<a class="nav-link" href="index">Home</a>
 				</li>
+				{% if session['user'] %}
 				<li class="nav-item">
-					{% if session['user'] %}
 					<a class="nav-link" href="logout">Logout</a>
-					{% else %}
-					<a class="nav-link" href="login">Login</a>
-					{% endif %}
 				</li>
+				{% else %}
+				<li class="nav-item">
+					<a class="nav-link" href="login">Login</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="register">Sign Up</a>
+				</li>
+				{% endif %}
 				<li class="nav-item">
 					<a class="nav-link" href="drawroom">Sketch Room</a>
 				</li>
