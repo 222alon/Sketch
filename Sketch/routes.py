@@ -1,16 +1,24 @@
 from flask import render_template, request, url_for, redirect, make_response, session
 import os
+
+import random
+import string
+
 from datetime import datetime
 from flask_login import current_user, logout_user, login_required, login_user
 
 from .models import User, db , login_manager
 from flask import current_app as app
 from . import socketio
-from flask_socketio import send, emit
+from flask_socketio import send, emit, join_room, leave_room
 
 
+def update_active(page):
+	session['active-page'] = {'home': '', 'public': '', 'private': '', 'login': '', 'signup': '', 'settings': ''}
+	session['active-page'][page] = 'active-item'
+	print (session['active-page'])
 
-# Class for handling all the strokes in the Draw Room
+# Class for handling all the strokes in a Draw Room
 
 class canvas_strokes:
 	def __init__(self):
@@ -32,7 +40,7 @@ print("Routes intiated")
 
 colors = ['#fafafa', '#FFBCC8', '#FF9B9B','#FFB392','#FFF585','#D8FF8F','#AAFFC0','#BDFBFD','#B5D1FF','#C2ACFF','#7E7E7E','#000000']
 
-draw_state = canvas_strokes()
+draw_state = {'public' : canvas_strokes()}
 
 @app.route('/harry')
 @app.route('/garry')
@@ -42,7 +50,8 @@ def garry():
 @app.route('/index')
 @app.route('/')
 def index():
-  return render_template('index.html')
+	update_active('home')
+	return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -51,6 +60,9 @@ def login():
 			if logged_user := User.query.filter_by(username=session['user']).first():
 				login_user(logged_user)
 				redirect(url_for('index'))
+
+		update_active('login')
+
 		if request.method == 'POST':
 			name = request.form['username']
 			password = request.form['password']
@@ -66,15 +78,17 @@ def login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def signup():
+	update_active('signup')
+
 	if request.method == 'POST':
 		email = request.form['email']
 		name = request.form['username']
 		password = request.form['password']
 		conf_password = request.form['pass_conf']
 
-		user = User.query.filter_by(email=email).first()
-		if user:
-			return render_template('signup.html', err='This email is already registered.')
+		
+		if User.query.filter_by(email=email).first() or User.query.filter_by(username=name).first():
+			return render_template('signup.html', err='Credentials already registered.')
 		if password != conf_password:
 			return render_template('signup.html', err='Password does not match.')
 
@@ -88,6 +102,7 @@ def signup():
 	return render_template('signup.html')
 
 @app.route('/logout')
+@login_required
 def logout():
 	if 'user' in session:
 		session['user'] = ''
@@ -96,8 +111,42 @@ def logout():
 
 
 @app.route('/drawroom')
-def sideBarTest():
+def public_drawroom():
+	return redirect(url_for('private_drawroom', room_id = 'public'))
+
+# public is the public draw room
+@app.route('/drawroom/<room_id>')
+def private_drawroom(room_id):
+	if room_id not in draw_state:
+		return make_response(render_template('404error.html'), 404)
+	if (room_id == 'public'):
+		update_active('public')
+	else:
+		update_active('private')
 	return render_template('draw-page.html', colors = colors)
+
+def generate_roomid():
+	# 839,299,365,868,340,224 <- max amount of rooms.
+	room_id = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(10))
+	if room_id in draw_state:
+		return generate_roomid()
+	return room_id
+
+@app.route('/create_room')
+def create_room():
+	room_id = generate_roomid()
+	draw_state[room_id] = canvas_strokes()
+	return redirect(url_for('private_drawroom', room_id = room_id))
+
+@app.route('/settings', methods=['GET', 'POST'])
+@login_required
+def settings():
+	update_active('settings')
+	if request.method == 'POST':
+		pass
+	
+	return render_template('settings.html', colors = colors)
+
 
 # ERROR HANDLING PAGES
 
@@ -115,10 +164,18 @@ def not_found(error):
 
 # SocketIO stuff
 
+# mysite/drawroom/askufgaskvj
+
+@socketio.on('join-room')
+def join_drawroom(room_id):
+	session['room-id'] = room_id
+	join_room(room_id)
+	print('joining room ' + room_id)
+	emit("load-canvas", draw_state[room_id].strokes)
+
 @socketio.on("connect")
 def handle_connect():
 	print("User connected!")
-	emit("load-canvas", draw_state.strokes)
 
 @socketio.on("disconnect")
 def handle_disconnect():
@@ -126,29 +183,29 @@ def handle_disconnect():
 
 @socketio.on("new-stroke")
 def new_stroke(data):
-	draw_state.addStroke(data)
-	emit("new-stroke", data, broadcast=True)
-	print("Stroke Added with a total of " + str(len(data)))
+	draw_state[session['room-id']].addStroke(data)
+	emit("new-stroke", data, room=session['room-id'])
+	print("Stroke Added with a total of " + str(len(data)) + " at " + session['room-id'])
 
 @socketio.on("undo")
 def undo_stroke():
-	draw_state.undo()
+	draw_state[session['room-id']].undo()
 	print("Undid a stroke")
-	emit("load-canvas", draw_state.strokes, broadcast=True)
+	emit("load-canvas", draw_state[session['room-id']].strokes, room=session['room-id'])
 
 @socketio.on("refresh-canvas")
 def refresh_canvas():
-	emit("load-canvas", draw_state.strokes)
+	emit("load-canvas", draw_state[session['room-id']].strokes)
 
 @socketio.on("mid-stroke")
 def update_cur_strokes(data):
-	emit("new-stroke", data, broadcast=True, include_self=False)
+	emit("new-stroke", data, room=session['room-id'], include_self=False)
 
 @socketio.on("clear")
 def clear_canvas():
 	print("Deleted canvas!")
-	draw_state.delete_canvas()
-	emit("load-canvas", draw_state.strokes, broadcast=True)
+	draw_state[session['room-id']].delete_canvas()
+	emit("load-canvas", draw_state[session['room-id']].strokes, room=session['room-id'])
 
 
 

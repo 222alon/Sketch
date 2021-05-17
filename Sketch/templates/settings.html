@@ -1,0 +1,54 @@
+{% extends "base.html"%}
+{% block title %} Settings {% endblock %}
+
+{% block headers %}
+
+		<!-- My Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/forms.css') }}">
+
+{% endblock %}
+
+{% block content %}
+
+	<form method = "post" action = "" class="form-page">
+		<h1>Sketch Settings</h1>
+		<p> Hello {{session['user']}}.</p>
+		</br>
+
+		<div class="color-picker card text-white bg-dark" id="colorPicker">
+			<div class="card-header">Colors</div>
+			<div class="card-body"> 
+				{% for color in colors: %}
+			<label class="btn btn-secondary" style="transition: none">
+				<label class="colorInputLabel"> 
+					<input type="color" id="color{{loop.index}}" value="{{color}}" class="hidden-input">
+					<!-- <i class="fas fa-tint" style="color: {{color}};"></i>  -->
+					<i class="fas fa-square-full" style="color: {{color}};"></i> 
+				color{{loop.index}} </label>
+			</label>
+				{% endfor %}
+			</div>
+		</div>
+
+	</form>
+
+	<script> 
+	
+		const inputs = document.querySelectorAll('input');
+		inputs.forEach((input) => {
+			input.parentElement.style.color = input.value;
+			input.parentElement.parentElement.style.backgroundColor = input.value;
+			input.addEventListener('input', handleClick);
+			input.addEventListener('change', handleClick);
+		});
+
+		function handleClick(e) {
+			this.parentElement.parentElement.style.backgroundColor = e.target.value;
+			this.parentElement.style.color = e.target.value;
+			this.nextElementSibling.style.color = e.target.value;
+			// console.log(e.target.value);
+		}
+
+	</script> 
+
+{% endblock %}

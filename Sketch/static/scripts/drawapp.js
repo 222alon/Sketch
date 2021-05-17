@@ -146,8 +146,12 @@ resizeCanvas();
 // -------SocketIO stuff---------
 
 socket.on('connect', function() {
-	console.log("Connected!");
+	room_id = window.location.pathname.split("/")[2];
+	console.log("Connected at " + room_id);
+	socket.emit('join-room', room_id);
 });
+
+
 
 socket.on('new-stroke', function(data){
 	console.log("Adding stroke from another client!")

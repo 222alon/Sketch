@@ -57,6 +57,20 @@
 	text-decoration: none;
 }
 
+.hidden-input{
+	visibility: hidden; 
+	width: 0; 
+	padding: 0; 
+	margin: 0;
+	border: 0px;
+}
+
+.colorInputLabel {
+	margin-bottom: 0;
+}
+
+
+
 .error-msg {
 	width: 30%;
 	margin: 0 auto;

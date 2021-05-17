@@ -41,6 +41,14 @@ body {
 	margin-left: auto;
 }
 
+.user-related {
+	color: var(--background-color) !important;
+}
+
+.active-item {
+	border-bottom: 1px var(--background-color) solid;
+}
+
 .center-horizon {
 	margin-left: auto;
 }
