@@ -8,6 +8,8 @@ var drawingInterval;
 const clearButton = document.getElementById('clear');
 const stroke_weight = document.getElementById('thickness');
 
+const thickness_slider = document.getElementById('thicknessRange');
+
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 
@@ -22,7 +24,7 @@ canvas.addEventListener('touchmove', touchMove);
 window.addEventListener('touchend', stop);
 
 canvas.addEventListener('mousedown', start);
-window.addEventListener('mousemove', mouseMove);
+canvas.addEventListener('mousemove', mouseMove);
 window.addEventListener('mouseup', stop);
 canvas.addEventListener('mouseout', outsideTrigger);
 
@@ -33,9 +35,11 @@ function touchOutsideCanvas() {
 }
 
 function startTouch(e) {
-	isDrawing = true;
+	
 	clientX = e.touches[0].clientX;
   clientY = e.touches[0].clientY;
+
+	isDrawing = true;
 	drawingInterval = setInterval(update_draw, 100);
 	draw(clientX, clientY)
 }
@@ -56,9 +60,12 @@ function outsideTrigger() {
 }
 
 function start (e) {
-	mousePressed = true;
 	clientX = e.clientX;
   clientY = e.clientY;
+
+	console.log('starting to draw')
+
+	mousePressed = true;
 	drawingInterval = setInterval(update_draw, 100);
 	draw(clientX, clientY)
 }
