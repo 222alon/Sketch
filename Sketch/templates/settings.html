@@ -19,34 +19,71 @@
 			<div class="card-header">Colors</div>
 			<div class="card-body"> 
 				{% for color in colors: %}
-			<label class="btn btn-secondary" style="transition: none">
-				<label class="colorInputLabel"> 
-					<input type="color" id="color{{loop.index}}" value="{{color}}" class="hidden-input">
-					<!-- <i class="fas fa-tint" style="color: {{color}};"></i>  -->
-					<i class="fas fa-square-full" style="color: {{color}};"></i> 
-				color{{loop.index}} </label>
-			</label>
+			<div class="color-button-container">
+				<p style="margin-bottom: 0px;"> COLOR {{loop.index}} </p>
+				<!-- The color pick button -->
+				<label class="btn btn-secondary color-button">
+						<input type="color" id="color{{loop.index}}" name="color{{loop.index}}" value="{{color}}" class="hidden-input">
+				</label>
+			</div>
 				{% endfor %}
 			</div>
 		</div>
+		</br>
+		<div class="color-picker card text-white bg-dark" id="iconPicker">
+			<div class="card-header">Icon</div>
+			<div class="card-body"> 
+				{% for icon in icons: %}
+			<div class="color-button-container">
+				<p style="margin-bottom: 0px;"> ICON {{loop.index}} </p>
+
+				<label class="btn btn-secondary color-button">
+					<i class="{{icon}}"></i>
+					<input style="display:none" type="radio" name="icon" id="icon{{loop.index}}" value="{{icon}}"
+					{% if cur_icon ==  icon%}
+						checked
+					{% endif %}
+					>
+				</label>
+			</div>
+				{% endfor %}
+			</div>
+		</div>
+	</br>
+
+	<p>Regrets? <a href="/reset_settings">Restore default settings.</a></p>
+	<p>Forgot Something? <a href="/reset_password">Reset your password.</a></p>
+	<input type = "submit" value = "Save Settings">
 
 	</form>
 
 	<script> 
 	
-		const inputs = document.querySelectorAll('input');
-		inputs.forEach((input) => {
+		const color_inputs = document.querySelectorAll('input[type=color]');
+		const icon_inputs = document.querySelectorAll('input[type=radio]');
+
+		color_inputs.forEach((input) => {
 			input.parentElement.style.color = input.value;
-			input.parentElement.parentElement.style.backgroundColor = input.value;
-			input.addEventListener('input', handleClick);
-			input.addEventListener('change', handleClick);
+			input.parentElement.style.backgroundColor = input.value;
+			input.addEventListener('input', handleColor);
+			input.addEventListener('change', handleColor);
 		});
 
-		function handleClick(e) {
-			this.parentElement.parentElement.style.backgroundColor = e.target.value;
+		icon_inputs.forEach((input) => {
+			if (input.checked) { input.parentElement.previousElementSibling.style.borderBottom = '1px solid #fafafa'; }
+			input.addEventListener('change', handleIcon);
+		});
+
+		function handleColor(e) {
+			this.parentElement.style.backgroundColor = e.target.value;
 			this.parentElement.style.color = e.target.value;
-			this.nextElementSibling.style.color = e.target.value;
-			// console.log(e.target.value);
+		}
+
+		function handleIcon(e) {
+			icon_inputs.forEach((input) => {
+			input.parentElement.previousElementSibling.style.borderBottom = 'none';
+		});
+		this.parentElement.previousElementSibling.style.borderBottom = '1px solid #fafafa';
 		}
 
 	</script> 

@@ -38,8 +38,8 @@
 }
 .form-page > input[type=submit] {
 
-
 	white-space: nowrap;
+	outline: none;
 
 	background:	var(--dark-color);
 	color: var(--background-color);
@@ -65,11 +65,15 @@
 	border: 0px;
 }
 
-.colorInputLabel {
-	margin-bottom: 0;
+.color-button-container {
+	display: inline-block;
+	width: 10ch;
 }
 
-
+.color-button {
+	transition: none;
+	width: 100%;
+}
 
 .error-msg {
 	width: 30%;

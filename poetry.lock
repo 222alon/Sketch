@@ -41,6 +41,17 @@ six = ">=1.10.0"
 
 [[package]]
 category = "main"
+description = "Dictionary with auto-expiring values for caching purposes"
+name = "expiringdict"
+optional = false
+python-versions = "*"
+version = "1.2.1"
+
+[package.extras]
+tests = ["dill", "coverage", "coveralls", "mock", "nose"]
+
+[[package]]
+category = "main"
 description = "A simple framework for building complex web applications."
 name = "flask"
 optional = false
@@ -231,7 +242,7 @@ dev = ["pytest", "pytest-timeout", "coverage", "tox", "sphinx", "pallets-sphinx-
 watchdog = ["watchdog"]
 
 [metadata]
-content-hash = "48517c65fc6aa77eeb1e07a36c51b7e8a1fe76bbd98284b741e9a304b96fe373"
+content-hash = "ec736e1bcc3c8187b44a9c0f047ac1035c84fda2c121bdda5421ecda96ba8451"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -250,6 +261,9 @@ dnspython = [
 eventlet = [
     {file = "eventlet-0.30.2-py2.py3-none-any.whl", hash = "sha256:89cc6dbfef47c4629cefead5fde21c5f2b33464d57f7df5fc5148f8b4de3fbb5"},
     {file = "eventlet-0.30.2.tar.gz", hash = "sha256:1811b122d9a45eb5bafba092d36911bca825f835cb648a862bbf984030acff9d"},
+]
+expiringdict = [
+    {file = "expiringdict-1.2.1.tar.gz", hash = "sha256:fe2ba427220425c3c8a3d29f6d2e2985bcee323f8bcd4021e68ebefbd90d8250"},
 ]
 flask = [
     {file = "Flask-1.1.2-py2.py3-none-any.whl", hash = "sha256:8a4fdd8936eba2512e9c85df320a37e694c93945b33ef33c89946a340a238557"},

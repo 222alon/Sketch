@@ -1,0 +1,25 @@
+{% extends "base.html"%}
+{% block title %} Recover Account {% endblock %}
+
+{% block headers %}
+
+		<!-- My Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/forms.css') }}">
+
+{% endblock %}
+
+{% block content %}
+
+	<form method = "post" action = "" class="form-page">
+		<h1>Sketch Recovery</h1>
+		</br>
+		<label for="username">Type the email or username for your account.</label>
+		<input type = "text" id = "username" name = "username" placeholder="generic@email.com" required>
+		<input type = "submit" value = "Send Code">
+		<p>Remember your password? <a href="/login">Login</a></p>
+		{% if err %}
+		<p class="error-msg">{{err}}</p>
+		{% endif %}
+	</form>
+
+{% endblock %}

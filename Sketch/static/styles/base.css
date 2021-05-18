@@ -32,6 +32,7 @@ body {
 } */
 
 .right-nav-el {
+	white-space: nowrap;
 	display: inline-block;
 	color: var(--dark-color);
 	background: var(--background-color);
@@ -39,6 +40,12 @@ body {
 	border-radius: 5px;
 
 	margin-left: auto;
+}
+
+@media only screen and (min-width: 575px) and (max-width: 705px) {
+  .right-nav-el {
+		display: none;
+	}
 }
 
 .user-related {

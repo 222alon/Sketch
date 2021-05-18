@@ -47,12 +47,15 @@
 					<a class="nav-link {{session['active-page']['home']}}" href="index">Home</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link {{session['active-page']['public']}}" href="drawroom/public">Public Room</a>
+					<a style="white-space: nowrap;" class="nav-link {{session['active-page']['public']}}" href="drawroom/public">Public Room</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link {{session['active-page']['private']}}" href="create_room">Private room</a>
+					<a style="white-space: nowrap;" class="nav-link {{session['active-page']['private']}}" href="create_room">Private room</a>
 				</li>
 				{% if session['user'] %}
+				<li style="margin-left: auto;" class="nav-item">
+					<a class="user-related nav-link {{session['active-page']['settings']}}" href="settings">Settings</a>
+				</li>
 				<li style="margin-left: auto;" class="nav-item">
 					<a class="user-related nav-link {{session['active-page']['logout']}}" href="logout">Logout</a>
 				</li>

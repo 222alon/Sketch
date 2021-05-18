@@ -17,14 +17,14 @@
 
 <!-- todo USE TRANSITION AND OVERFLOW Y TO ANIMATE CARDS APPEARING -->
 <!-- Holder of the cards -->
-<div class="cards-parent noselect"> 
+<div class="cards-parent noselect">
 	<!-- The color picking tool -->
 	<div class="color-picker card text-white bg-dark mb-3" id="colorPicker">
 		<div class="card-header"><a href="javascript:void(0)" class="card-closer" onclick="openColors()">&times;</a>Colors</div>
 		<div class="card-body"> 
 			{% for color in colors: %}
 		<label class="btn btn-secondary">
-			<input class="color-radio" type="radio" name="color" id="color{{loop.index}}" autocomplete="off" checked value="{{color}}" ><i class="fas fa-tint" style="color: {{color}};"></i>
+			<input class="color-radio" type="radio" name="color" id="color{{loop.index}}" autocomplete="off" checked value="{{color}}" ><i class="{{icon}}" style="color: {{color}};"></i>
 		</label>
 			{% endfor %}
 		</div>

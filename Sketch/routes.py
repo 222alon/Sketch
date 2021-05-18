@@ -5,6 +5,13 @@ import random
 import string
 
 from datetime import datetime
+
+import smtplib, ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+from expiringdict import ExpiringDict
+
 from flask_login import current_user, logout_user, login_required, login_user
 
 from .models import User, db , login_manager
@@ -14,9 +21,9 @@ from flask_socketio import send, emit, join_room, leave_room
 
 
 def update_active(page):
-	session['active-page'] = {'home': '', 'public': '', 'private': '', 'login': '', 'signup': '', 'settings': ''}
+	session['active-page'] = {'home': '', 'public': '', 'private': '', 'login': '', 'signup': '', 'settings': '', 'none': ''}
 	session['active-page'][page] = 'active-item'
-	print (session['active-page'])
+	# print (session['active-page'])
 
 # Class for handling all the strokes in a Draw Room
 
@@ -38,14 +45,24 @@ class canvas_strokes:
 
 print("Routes intiated")
 
+# email = 'SketchConfirmation@gmail.com' 
+# password = 'SketchPassword' 
+# Too lazy to secure the password, go nuts.
+
+
 colors = ['#fafafa', '#FFBCC8', '#FF9B9B','#FFB392','#FFF585','#D8FF8F','#AAFFC0','#BDFBFD','#B5D1FF','#C2ACFF','#7E7E7E','#000000']
 
+icons = ['fas fa-circle', 'fas fa-square-full', 'fas fa-certificate' , 'fas fa-tint', 'fas fa-paint-brush', 'fas fa-fill']
+
 draw_state = {'public' : canvas_strokes()}
+
+codes = ExpiringDict(max_len=100, max_age_seconds=300) # This has a max size which could prove problamatic, however it is good enough for the limited use my site will have.
+# codes['test'] = 'TESTING' # Will expire after 5 minutes, raise KeyError after.
 
 @app.route('/harry')
 @app.route('/garry')
 def garry():
-  return render_template('garry.html')
+	return render_template('garry.html')
 
 @app.route('/index')
 @app.route('/')
@@ -75,6 +92,91 @@ def login():
 			return render_template('login.html', err = 'Invalid credentials')
 		return render_template('login.html')
 	return redirect(url_for('index'))
+
+@app.route('/recover', methods=['GET', 'POST'])
+def recover():
+	if request.method == 'POST':
+		if User.query.filter_by(email=request.form['username']).first():
+			session['email_to_reset'] = request.form['username']
+		elif User.query.filter_by(username=request.form['username']).first():
+			user_email = User.query.filter_by(username=request.form['username']).first().email
+			session['email_to_reset'] = user_email
+		else:
+			session['email_to_reset'] = ''
+		
+		return redirect(url_for('confirm'))
+	update_active('none')
+	return render_template('recover.html')
+
+@app.route('/confirm', methods=['GET', 'POST'])
+def confirm():
+	if request.method == 'POST':
+		conf_code = codes[session['email_to_reset']]
+		if request.form['conf_code'] == conf_code:
+			resetted_user = User.query.filter_by(email=session['email_to_reset']).first()
+			session['user'] = resetted_user.username
+			login_user(resetted_user)
+			session['email_to_reset'] = ''
+			return redirect(url_for('reset_password'))
+
+		else:
+			return render_template('confirm.html', err = 'Invalid Code.')
+
+	update_active('none')
+
+	if session['email_to_reset']:
+		message = MIMEMultipart("alternative")
+		message["Subject"] = "Sketch Confirmation Code"
+		message["From"] = "SketchConfirmation@gmail.com"
+		message["To"] = session['email_to_reset']
+
+		conf_code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+		codes[session['email_to_reset']] = conf_code
+		raw_msg = """
+Subject: Sketch Confirmation Email.
+
+Your confirmation code is {}, if you did not request an account recovery please ignore this message.""".format(conf_code)
+		html_msg = """
+<html> 
+	<body style="background-color = #fafafa;, border: 1px hsl(200, 4%, 17%) solid">
+
+		<a href="https://sketch.222alon.repl.co"> Sent from Sketch by Alon Levi </a>
+		</br>
+		<p style="color = hsl(200, 4%, 17%);"> Your confirmation code is <b>{}</b>, if you did not request an account recovery please ignore this message.</p>
+
+	</body>
+</html>""".format(conf_code)
+
+		message.attach(MIMEText(raw_msg, 'plain'))
+		message.attach(MIMEText(html_msg, 'html'))
+
+		context = ssl.create_default_context()
+		with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+			print('Sending test msg')
+
+			server.login("SketchConfirmation@gmail.com", 'SketchPassword')
+			server.sendmail("SketchConfirmation@gmail.com", "222alon123@gmail.com", message.as_string())
+	else:
+		print("Given user does not exist.")
+	return render_template('confirm.html')
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+@login_required
+def reset_password():
+	update_active('none')
+	if request.method == 'POST':
+		password = request.form['password']
+		conf_password = request.form['pass_conf']
+
+		if password != conf_password:
+			return render_template('resetpass.html', err='Password does not match.')
+		
+		current_user.password = password
+		db.session.commit()
+		return redirect(url_for('index'))
+
+	return render_template('resetpass.html')
+	
 
 @app.route('/register', methods=['GET', 'POST'])
 def signup():
@@ -109,12 +211,11 @@ def logout():
 		logout_user()
 	return redirect(url_for('login'))
 
-
 @app.route('/drawroom')
 def public_drawroom():
 	return redirect(url_for('private_drawroom', room_id = 'public'))
 
-# public is the public draw room
+# 'public' is the public draw room
 @app.route('/drawroom/<room_id>')
 def private_drawroom(room_id):
 	if room_id not in draw_state:
@@ -123,7 +224,9 @@ def private_drawroom(room_id):
 		update_active('public')
 	else:
 		update_active('private')
-	return render_template('draw-page.html', colors = colors)
+	if current_user.is_authenticated:
+		return render_template('draw-page.html', colors = current_user.colors.split(','), icon = current_user.icon)
+	return render_template('draw-page.html', colors = colors, icon = icons[3])
 
 def generate_roomid():
 	# 839,299,365,868,340,224 <- max amount of rooms.
@@ -143,24 +246,38 @@ def create_room():
 def settings():
 	update_active('settings')
 	if request.method == 'POST':
-		pass
+		new_colors = []
+		for key, value in request.form.items():
+			if key == 'icon':
+				current_user.icon = value
+			else:
+				new_colors.append(value)
+		current_user.colors = ','.join(new_colors)
+		db.session.commit()
 	
-	return render_template('settings.html', colors = colors)
+	print(current_user.colors.split(','))
+	return render_template('settings.html', colors = current_user.colors.split(','), icons = icons, cur_icon = current_user.icon)
 
+@app.route('/reset_settings')
+@login_required
+def reset_settings():
+	current_user.colors = ','.join(colors);
+	current_user.icon = 'fas fa-tint';
+	db.session.commit()
+	return redirect(url_for('settings'))
 
 # ERROR HANDLING PAGES
 
 @login_manager.unauthorized_handler
 def unauthorized():
-	return redirect(url_for('login'), err = 'Login to access this')
-
+	return render_template('unauthorized.html')
 
 @app.errorhandler(404)
 def not_found(error):
-  print(error)  # error is a "werkzeug.exceptions.NotFound" object.
-  # Handle a 404 error
-  # todo update 404error.html to be better
-  return make_response(render_template('404error.html'), 404)
+	print(error)  # error is a "werkzeug.exceptions.NotFound" object.
+	# Handle a 404 error
+	# todo update 404error.html to be better
+	return make_response(render_template('404error.html'), 404)
 
 # SocketIO stuff
 
