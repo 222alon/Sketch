@@ -47,6 +47,7 @@ print("Routes intiated")
 
 # email = 'SketchConfirmation@gmail.com' 
 # password = 'SketchPassword' 
+# This should only be gotten as a python input but
 # Too lazy to secure the password, go nuts.
 
 
@@ -58,11 +59,6 @@ draw_state = {'public' : canvas_strokes()}
 
 codes = ExpiringDict(max_len=100, max_age_seconds=300) # This has a max size which could prove problamatic, however it is good enough for the limited use my site will have.
 # codes['test'] = 'TESTING' # Will expire after 5 minutes, raise KeyError after.
-
-@app.route('/harry')
-@app.route('/garry')
-def garry():
-	return render_template('garry.html')
 
 @app.route('/index')
 @app.route('/')
