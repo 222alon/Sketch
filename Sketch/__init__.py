@@ -26,7 +26,7 @@ app.config['SESSION_TYPE'] = 'sqlalchemy'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days = 3)
 app.config['SESSION_PERMANENT'] = True
 
-socketio = SocketIO(app, async_mode="eventlet", cors_allowed_origins="*", manage_session=False)
+socketio = SocketIO(app, async_mode="eventlet", cors_allowed_origins="*", manage_session=False) 
 
 db.init_app(app)
 

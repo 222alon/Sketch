@@ -60,6 +60,10 @@ draw_state = {'public' : canvas_strokes()}
 codes = ExpiringDict(max_len=100, max_age_seconds=300) # This has a max size which could prove problamatic, however it is good enough for the limited use my site will have.
 # codes['test'] = 'TESTING' # Will expire after 5 minutes, raise KeyError after.
 
+@app.route('/logo')
+def logo():
+	return render_template('logoThing.html')
+
 @app.route('/index')
 @app.route('/')
 def index():
@@ -151,7 +155,7 @@ Your confirmation code is {}, if you did not request an account recovery please 
 			print('Sending test msg')
 
 			server.login("SketchConfirmation@gmail.com", 'SketchPassword')
-			server.sendmail("SketchConfirmation@gmail.com", "222alon123@gmail.com", message.as_string())
+			server.sendmail("SketchConfirmation@gmail.com", session['email_to_reset'], message.as_string())
 	else:
 		print("Given user does not exist.")
 	return render_template('confirm.html')
@@ -316,7 +320,7 @@ def update_cur_strokes(data):
 
 @socketio.on("clear")
 def clear_canvas():
-	print("Deleted canvas!")
+	print("Deleted canvas {}!".format(session['room-id']))
 	draw_state[session['room-id']].delete_canvas()
 	emit("load-canvas", draw_state[session['room-id']].strokes, room=session['room-id'])
 

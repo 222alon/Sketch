@@ -83,7 +83,7 @@ function draw (x, y) {
 
 	
   ctx.lineWidth = stroke_weight.value;
-	color = document.querySelector('input[name="color"]:checked').value;
+	let color = document.querySelector('input[name="color"]:checked').value;
   ctx.lineCap = "round";
   ctx.strokeStyle = color;
 
@@ -124,7 +124,6 @@ function stop() {
 function update_draw() {
 	socket.emit('mid-stroke', cur_update);
 	cur_update = [];
-	console.log("Dummy update");
 }
 
 document.onkeydown = undo;
@@ -157,6 +156,11 @@ socket.on('connect', function() {
 	console.log("Connected at " + room_id);
 	socket.emit('join-room', room_id);
 });
+
+// socket.on('connect', connectedFunc);
+// function connectedFunc() {
+// 	console.log("Connected");
+// }
 
 
 
