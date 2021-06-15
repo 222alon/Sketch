@@ -38,6 +38,8 @@
 }
 .form-page > input[type=submit] {
 
+	cursor: pointer;
+
 	white-space: nowrap;
 	outline: none;
 

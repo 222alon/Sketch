@@ -30,6 +30,7 @@ def update_active(page):
 class canvas_strokes:
 	def __init__(self):
 		self.strokes = []
+		self.backgroundImage = ""
 
 	def addStroke(self, stroke):
 		self.strokes.append(stroke)
@@ -59,10 +60,6 @@ draw_state = {'public' : canvas_strokes()}
 
 codes = ExpiringDict(max_len=100, max_age_seconds=300) # This has a max size which could prove problamatic, however it is good enough for the limited use my site will have.
 # codes['test'] = 'TESTING' # Will expire after 5 minutes, raise KeyError after.
-
-@app.route('/logo')
-def logo():
-	return render_template('logoThing.html')
 
 @app.route('/index')
 @app.route('/')
@@ -138,11 +135,13 @@ Subject: Sketch Confirmation Email.
 Your confirmation code is {}, if you did not request an account recovery please ignore this message.""".format(conf_code)
 		html_msg = """
 <html> 
-	<body style="background-color = #fafafa;, border: 1px hsl(200, 4%, 17%) solid">
+	<body>
 
 		<a href="https://sketch.222alon.repl.co"> Sent from Sketch by Alon Levi </a>
 		</br>
-		<p style="color = hsl(200, 4%, 17%);"> Your confirmation code is <b>{}</b>, if you did not request an account recovery please ignore this message.</p>
+		<p style="color = hsl(200, 4%, 17%);"> Your confirmation code is </br>
+		<div style="font-size: 50px;">{}</div> 
+		</br>if you did not request an account recovery please ignore this message.</p>
 
 	</body>
 </html>""".format(conf_code)
@@ -177,11 +176,9 @@ def reset_password():
 
 	return render_template('resetpass.html')
 	
-
 @app.route('/register', methods=['GET', 'POST'])
 def signup():
 	update_active('signup')
-
 	if request.method == 'POST':
 		email = request.form['email']
 		name = request.form['username']
@@ -310,6 +307,11 @@ def undo_stroke():
 	print("Undid a stroke")
 	emit("load-canvas", draw_state[session['room-id']].strokes, room=session['room-id'])
 
+@socketio.on("change-background")
+def change_background(data):
+	draw_state[session['room-id']].backgroundImage = data
+	emit("change-background", data, room=session['room-id'], include_self=False)
+	
 @socketio.on("refresh-canvas")
 def refresh_canvas():
 	emit("load-canvas", draw_state[session['room-id']].strokes)

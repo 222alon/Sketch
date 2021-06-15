@@ -30,6 +30,8 @@ canvas.addEventListener('mouseout', outsideTrigger);
 
 clearButton.addEventListener('click', clearCanvas);
 
+window.screen.orientation.lock('landscape');
+
 function touchOutsideCanvas() {
 	mousePressed = true;
 }
@@ -135,6 +137,35 @@ function undo (e){
 
 };
 
+// IMAGE UPLOADING
+
+var bgImg = new Image();
+var bgImgSrc;
+
+window.addEventListener('paste', function(e){
+	if(e.clipboardData == false) return false; 
+  var imgs = e.clipboardData.items;
+  if(imgs == undefined) return false;
+    for (var i = 0; i < imgs.length; i++) {
+        if (imgs[i].type.indexOf("image") == -1) continue;
+          var imgObj = imgs[i].getAsFile();
+					var url = window.URL || window.webkitURL;
+					bgImgSrc = url.createObjectURL(imgObj);
+					console.log(bgImgSrc)
+          loadImage();
+		}
+		
+});
+
+function loadImage(){
+  bgImg = new Image();
+	socket.emit('change-background', bgImgSrc);
+	bgImg.src = bgImgSrc;
+	socket.emit('refresh-canvas');
+
+}
+
+// MISC FUNCTIONS
 
 function clearCanvas () {
 	socket.emit('clear');
@@ -152,7 +183,8 @@ resizeCanvas();
 // -------SocketIO stuff---------
 
 socket.on('connect', function() {
-	room_id = window.location.pathname.split("/")[2];
+	url_as_ar = window.location.pathname.split("/")
+	room_id = url_as_ar[url_as_ar.length - 1];
 	console.log("Connected at " + room_id);
 	socket.emit('join-room', room_id);
 });
@@ -162,7 +194,11 @@ socket.on('connect', function() {
 // 	console.log("Connected");
 // }
 
-
+socket.on('change-background', function(data){
+	console.log("Changing background from another user");
+	bgImgSrc = data;
+	socket.emit('refresh-canvas');
+});
 
 socket.on('new-stroke', function(data){
 	console.log("Adding stroke from another client!")
@@ -189,12 +225,18 @@ socket.on('new-stroke', function(data){
 socket.on('load-canvas', function(data) {
 	console.log("Loading canvas from server memory");
 	
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	console.log(bgImgSrc);
+	if(bgImgSrc && bgImg) {
+		ctx.drawImage(bgImg,0,0,canvas.width,canvas.height);
+		bgImg.src = bgImgSrc;
+	}
+	
 	ctx.lineCap = "round";
 
 	let cur_x = 0;
 	let cur_y = 0;
-
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	ctx.beginPath();
 
@@ -217,6 +259,5 @@ socket.on('load-canvas', function(data) {
 		})
 	ctx.beginPath();
 	});
-
 });
 
