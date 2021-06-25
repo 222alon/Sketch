@@ -6,6 +6,8 @@ var cur_update = [];
 var drawingInterval;
 
 const clearButton = document.getElementById('clear');
+const downloadButton = document.getElementById('download');
+const clearBgButton = document.getElementById('clearbg');
 const stroke_weight = document.getElementById('thickness');
 
 const thickness_slider = document.getElementById('thicknessRange');
@@ -30,7 +32,23 @@ canvas.addEventListener('mouseout', outsideTrigger);
 
 clearButton.addEventListener('click', clearCanvas);
 
-window.screen.orientation.lock('landscape');
+downloadButton.addEventListener('click', function(e) {
+	
+	var img = canvas.toDataURL("image/png");
+	e.target.href = img;
+
+});
+
+clearBgButton.addEventListener('click', function(e) {
+	
+		console.log('resetting background image')
+		socket.emit('change-background', '');
+		bgImg.src = '';
+		socket.emit('refresh-canvas');
+
+});
+
+// window.screen.orientation.lock('landscape');
 
 function touchOutsideCanvas() {
 	mousePressed = true;
@@ -148,11 +166,20 @@ window.addEventListener('paste', function(e){
   if(imgs == undefined) return false;
     for (var i = 0; i < imgs.length; i++) {
         if (imgs[i].type.indexOf("image") == -1) continue;
+				
           var imgObj = imgs[i].getAsFile();
-					var url = window.URL || window.webkitURL;
-					bgImgSrc = url.createObjectURL(imgObj);
-					console.log(bgImgSrc)
-          loadImage();
+
+					var reader = new FileReader();
+
+					reader.onload = function () {
+						bgImgSrc = reader.result;
+						// console.log(bgImgSrc);
+          	loadImage();
+					}
+
+					reader.readAsDataURL(imgObj);
+									
+					
 		}
 		
 });
@@ -227,7 +254,7 @@ socket.on('load-canvas', function(data) {
 	
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	console.log(bgImgSrc);
+	// console.log(bgImgSrc);
 	if(bgImgSrc && bgImg) {
 		ctx.drawImage(bgImg,0,0,canvas.width,canvas.height);
 		bgImg.src = bgImgSrc;

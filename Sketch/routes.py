@@ -150,7 +150,7 @@ Your confirmation code is {}, if you did not request an account recovery please 
 		message.attach(MIMEText(html_msg, 'html'))
 
 		context = ssl.create_default_context()
-		with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+		with smtplib.SMTP_SSL("smtp.gmail.com", 587, context=context) as server:
 			print('Sending test msg')
 
 			server.login("SketchConfirmation@gmail.com", 'SketchPassword')
@@ -285,7 +285,7 @@ def join_drawroom(room_id):
 	session['room-id'] = room_id
 	join_room(room_id)
 	print('joining room ' + room_id)
-	emit("load-canvas", draw_state[room_id].strokes)
+	emit("change-background", draw_state[room_id].backgroundImage)
 
 @socketio.on("connect")
 def handle_connect():
